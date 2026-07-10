@@ -1,0 +1,10 @@
+-- Initial Schema SQL Migration File (Flyway)
+-- This file is a placeholder. You can write your initial schema (tables, indexes, constraints) here.
+-- Example:
+-- CREATE TABLE users (
+--     id BIGSERIAL PRIMARY KEY,
+--     username VARCHAR(50) UNIQUE NOT NULL,
+--     email VARCHAR(100) UNIQUE NOT NULL,
+--     password VARCHAR(100) NOT NULL,
+--     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+-- );

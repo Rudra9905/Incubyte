@@ -1,0 +1,35 @@
+# Target directory containing compiled code
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IDE / Editor configurations
+.idea/
+*.iws
+*.iml
+*.ipr
+.classpath
+.project
+.settings/
+.bin/
+tmp/
+.nb-gradle/
+.vscode/
+
+# Local Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+
+# Log files
+*.log
+logs/
+
+# OS specific files
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Crash dumps
+*.hprof
