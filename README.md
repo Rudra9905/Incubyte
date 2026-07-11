@@ -77,15 +77,17 @@ A comprehensive full-stack web application designed for car dealerships to manag
 *(Please replace these placeholders with actual screenshots of your running application before submitting)*
 
 ### 1. Login Page
-![Login Page](docs/screenshots/login.png)
+<img width="1917" height="905" alt="image" src="https://github.com/user-attachments/assets/0d8a12a7-5308-49ae-85ef-96efa0b57ce9" />
+
 *Secure authentication portal for dealership staff.*
 
 ### 2. Inventory Dashboard
-![Dashboard](docs/screenshots/dashboard.png)
-*Main dashboard showing the list of vehicles and management options.*
+<img width="1896" height="906" alt="image" src="https://github.com/user-attachments/assets/33be24de-8d49-4181-b74f-7e4530cb8c3a" />
+
 
 ### 3. Add/Edit Vehicle
-![Add Vehicle](docs/screenshots/add-vehicle.png)
+<img width="1895" height="905" alt="image" src="https://github.com/user-attachments/assets/dc481f9a-ded6-4588-a850-aa1a5ba0ae6c" />
+
 *Form for adding new vehicles or editing existing inventory.*
 
 ## 🧪 Test Report
@@ -124,11 +126,14 @@ As per the project requirements, the development of this application followed st
 
 #### 1. Failing Test (Red Phase)
 Example : Registration Service Test Cases
-![Failing Test ](docs/screenshots/RegistrationTest.png)
+<img width="940" height="495" alt="image" src="https://github.com/user-attachments/assets/83b163c8-30b0-476f-bab4-0e9809152991" />
+
 
 
 #### 2. Passing Test (Green Phase)
-*Screenshot showing the same test passing after writing the minimum required code.*
+After Implementing the minimal code for passing all test cases 
+<img width="940" height="499" alt="image" src="https://github.com/user-attachments/assets/beb82b23-42fd-42d2-bec2-6338ed839041" />
+
 
 
 ## 🤖 My AI Usage
@@ -139,8 +144,7 @@ During the development of this project, I utilized AI assistance (Antigravity / 
 - **Debugging & Refactoring**: Helped resolve complex bugs, such as resolving PostgreSQL `InvalidDataAccessResourceUsageException` by refactoring JPQL queries into native SQL with explicit type casting.
 - **Documentation**: Aided in structuring this README and generating a detailed interview prep assessment.
 
-*Note: All AI-generated code was thoroughly reviewed, tested, and customized to meet the specific requirements of the assignment rubric.*
+*Note: But all the Ai-genrated Code is Checked and Reviwed by MySelf before commitment.
 
-## 🌍 Live Deployment (Optional)
-
-[Link to Live Application](#) *(Replace with your Vercel/Netlify/AWS link if deployed)*
+## 🌍 Live Deployment 
+https://incubyte-kata-rudra.vercel.app
