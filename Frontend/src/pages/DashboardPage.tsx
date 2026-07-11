@@ -103,6 +103,27 @@ export default function DashboardPage() {
     }
   });
 
+  // Restock Vehicle Mutation
+  const restockMutation = useMutation({
+    mutationFn: async ({ id, quantity }: { id: number; quantity: number }) => {
+      await api.post(`/vehicles/${id}/restock?quantity=${quantity}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vehicles'] });
+    }
+  });
+
+  const handleRestock = (vehicle: Vehicle) => {
+    const input = window.prompt(`Restock "${vehicle.make} ${vehicle.model}"\nEnter quantity to add:`, '1');
+    if (input === null) return; // cancelled
+    const qty = parseInt(input, 10);
+    if (isNaN(qty) || qty <= 0) {
+      alert('Please enter a valid quantity greater than 0.');
+      return;
+    }
+    restockMutation.mutate({ id: vehicle.id, quantity: qty });
+  };
+
   const resetForm = () => {
     setMake('');
     setModel('');
@@ -307,12 +328,19 @@ export default function DashboardPage() {
                     </button>
 
                     {isAdmin && (
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-3 gap-2">
                         <button
                           onClick={() => openEditModal(vehicle)}
                           className="border border-black py-1.5 text-xs font-semibold hover:bg-slate-50 transition"
                         >
                           Edit
+                        </button>
+                        <button
+                          onClick={() => handleRestock(vehicle)}
+                          disabled={restockMutation.isPending}
+                          className="border border-black py-1.5 text-xs font-semibold hover:bg-green-50 hover:text-green-700 transition disabled:opacity-50"
+                        >
+                          Restock
                         </button>
                         <button
                           onClick={() => {
