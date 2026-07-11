@@ -15,14 +15,20 @@ public class User {
 
     private String email;
     private String password;
+    private String role;
 
     public User() {
     }
 
     public User(Long id, String email, String password) {
+        this(id, email, password, "USER");
+    }
+
+    public User(Long id, String email, String password, String role) {
         this.id = id;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public Long getId() {
@@ -49,6 +55,14 @@ public class User {
         this.password = password;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     public static UserBuilder builder() {
         return new UserBuilder();
     }
@@ -57,6 +71,7 @@ public class User {
         private Long id;
         private String email;
         private String password;
+        private String role = "USER";
 
         UserBuilder() {
         }
@@ -76,8 +91,13 @@ public class User {
             return this;
         }
 
+        public UserBuilder role(String role) {
+            this.role = role;
+            return this;
+        }
+
         public User build() {
-            return new User(id, email, password);
+            return new User(id, email, password, role);
         }
     }
 }

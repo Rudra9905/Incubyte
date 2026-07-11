@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class jJwtServiceTest {
+class JwtServiceTest {
 
     private JwtService jwtService;
 
@@ -29,6 +29,18 @@ class jJwtServiceTest {
         assertFalse(token.isEmpty());
         assertEquals(email, jwtService.extractEmail(token));
         assertTrue(jwtService.isTokenValid(token, email));
+    }
+
+    @Test
+    @DisplayName("generateToken with role should embed role claim and extract it")
+    void testTokenRoleClaim() {
+        String email = "admin@example.com";
+        String role = "ADMIN";
+
+        String token = jwtService.generateToken(email, role);
+
+        assertNotNull(token);
+        assertEquals(role, jwtService.extractRole(token));
     }
 
     @Test

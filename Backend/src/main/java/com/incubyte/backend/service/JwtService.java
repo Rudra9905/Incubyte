@@ -32,6 +32,14 @@ public class JwtService {
                 .compact();
     }
 
+    public String generateToken(String email, String role) {
+        return generateToken(email);
+    }
+
+    public String extractRole(String token) {
+        return null;
+    }
+
     public String extractEmail(String token) {
         return getClaims(token).getSubject();
     }

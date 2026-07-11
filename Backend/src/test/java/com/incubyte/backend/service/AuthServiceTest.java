@@ -43,9 +43,8 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("Successful login should return AuthResponse with JWT token")
+    @DisplayName("Successful login should return AuthResponse with JWT token and USER role")
     void testLogin_Success() {
-        // Arrange
         String email = "user@example.com";
         String password = "Password123!";
         String hashedPassword = "hashedPassword";
@@ -56,46 +55,75 @@ class AuthServiceTest {
                 .id(1L)
                 .email(email)
                 .password(hashedPassword)
+                .role("USER")
                 .build();
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(password, hashedPassword)).thenReturn(true);
-        when(jwtService.generateToken(email)).thenReturn(token);
+        when(jwtService.generateToken(email, "USER")).thenReturn(token);
 
-        // Act
         AuthResponse response = authService.login(request);
 
-        // Assert
         assertNotNull(response);
         assertEquals(token, response.getToken());
         assertEquals(email, response.getEmail());
+        assertEquals("USER", response.getRole());
 
         verify(userRepository).findByEmail(email);
         verify(passwordEncoder).matches(password, hashedPassword);
-        verify(jwtService).generateToken(email);
+        verify(jwtService).generateToken(email, "USER");
+    }
+
+    @Test
+    @DisplayName("Successful login for ADMIN should return AuthResponse with ADMIN role")
+    void testLogin_AdminSuccess() {
+        String email = "admin@example.com";
+        String password = "Password123!";
+        String hashedPassword = "hashedPassword";
+        String token = "jwt.token.here";
+
+        LoginRequest request = new LoginRequest(email, password);
+        User user = User.builder()
+                .id(2L)
+                .email(email)
+                .password(hashedPassword)
+                .role("ADMIN")
+                .build();
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(password, hashedPassword)).thenReturn(true);
+        when(jwtService.generateToken(email, "ADMIN")).thenReturn(token);
+
+        AuthResponse response = authService.login(request);
+
+        assertNotNull(response);
+        assertEquals(token, response.getToken());
+        assertEquals(email, response.getEmail());
+        assertEquals("ADMIN", response.getRole());
+
+        verify(userRepository).findByEmail(email);
+        verify(passwordEncoder).matches(password, hashedPassword);
+        verify(jwtService).generateToken(email, "ADMIN");
     }
 
     @Test
     @DisplayName("Login with non-existent email should throw BadCredentialsException")
     void testLogin_EmailNotFound() {
-        // Arrange
         String email = "notfound@example.com";
         LoginRequest request = new LoginRequest(email, "Password123!");
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(BadCredentialsException.class, () -> authService.login(request));
 
         verify(userRepository).findByEmail(email);
         verify(passwordEncoder, never()).matches(anyString(), anyString());
-        verify(jwtService, never()).generateToken(anyString());
+        verify(jwtService, never()).generateToken(anyString(), anyString());
     }
 
     @Test
     @DisplayName("Login with incorrect password should throw BadCredentialsException")
     void testLogin_IncorrectPassword() {
-        // Arrange
         String email = "user@example.com";
         String wrongPassword = "wrongPassword";
         String hashedPassword = "hashedPassword";
@@ -105,16 +133,16 @@ class AuthServiceTest {
                 .id(1L)
                 .email(email)
                 .password(hashedPassword)
+                .role("USER")
                 .build();
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(wrongPassword, hashedPassword)).thenReturn(false);
 
-        // Act & Assert
         assertThrows(BadCredentialsException.class, () -> authService.login(request));
 
         verify(userRepository).findByEmail(email);
         verify(passwordEncoder).matches(wrongPassword, hashedPassword);
-        verify(jwtService, never()).generateToken(anyString());
+        verify(jwtService, never()).generateToken(anyString(), anyString());
     }
 }

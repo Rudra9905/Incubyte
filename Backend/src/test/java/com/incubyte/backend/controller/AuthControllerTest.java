@@ -47,10 +47,10 @@ class AuthControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("POST /api/auth/register - Success should return 201 Created")
+    @DisplayName("POST /api/auth/register - Success with default role should return 201 Created and USER role")
     void testRegister_Success() throws Exception {
         RegistrationRequest request = new RegistrationRequest("test@example.com", "Password123!");
-        RegistrationResponse response = new RegistrationResponse(1L, "test@example.com");
+        RegistrationResponse response = new RegistrationResponse(1L, "test@example.com", "USER");
 
         when(registrationService.register(any(RegistrationRequest.class))).thenReturn(response);
 
@@ -60,7 +60,27 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.email").value("test@example.com"));
+                .andExpect(jsonPath("$.email").value("test@example.com"))
+                .andExpect(jsonPath("$.role").value("USER"));
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("POST /api/auth/register - Success with custom ADMIN role should return 201 Created and ADMIN role")
+    void testRegister_AdminSuccess() throws Exception {
+        RegistrationRequest request = new RegistrationRequest("admin@example.com", "Password123!", "ADMIN");
+        RegistrationResponse response = new RegistrationResponse(2L, "admin@example.com", "ADMIN");
+
+        when(registrationService.register(any(RegistrationRequest.class))).thenReturn(response);
+
+        mockMvc.perform(post("/api/auth/register")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(2L))
+                .andExpect(jsonPath("$.email").value("admin@example.com"))
+                .andExpect(jsonPath("$.role").value("ADMIN"));
     }
 
     @Test
@@ -116,10 +136,10 @@ class AuthControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("POST /api/auth/login - Success should return 200 OK with JWT token")
+    @DisplayName("POST /api/auth/login - Success should return 200 OK with JWT token and role")
     void testLogin_Success() throws Exception {
         LoginRequest request = new LoginRequest("test@example.com", "Password123!");
-        AuthResponse response = new AuthResponse("mock-jwt-token", "test@example.com");
+        AuthResponse response = new AuthResponse("mock-jwt-token", "test@example.com", "ADMIN");
 
         when(authService.login(any(LoginRequest.class))).thenReturn(response);
 
@@ -129,7 +149,8 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("mock-jwt-token"))
-                .andExpect(jsonPath("$.email").value("test@example.com"));
+                .andExpect(jsonPath("$.email").value("test@example.com"))
+                .andExpect(jsonPath("$.role").value("ADMIN"));
     }
 
     @Test
