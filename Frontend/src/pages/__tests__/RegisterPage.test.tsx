@@ -1,15 +1,14 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import RegisterPage from '../RegisterPage';
-import axios from 'axios';
+import api from '../../lib/axios';
 
-// Mock axios
-vi.mock('axios');
+// Mock api
+vi.mock('../../lib/axios');
 
-const mockedAxios = axios as any;
+const mockedApi = api as any;
 
 describe('RegisterPage', () => {
   let queryClient: QueryClient;
@@ -57,7 +56,7 @@ describe('RegisterPage', () => {
   });
 
   it('calls register API and shows success message on successful submit', async () => {
-    mockedAxios.post.mockResolvedValueOnce({
+    mockedApi.post.mockResolvedValueOnce({
       data: {
         id: 1,
         email: 'newuser@example.com',
@@ -72,7 +71,7 @@ describe('RegisterPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /register/i }));
 
     await waitFor(() => {
-      expect(mockedAxios.post).toHaveBeenCalledWith('/api/auth/register', {
+      expect(mockedApi.post).toHaveBeenCalledWith('/auth/register', {
         email: 'newuser@example.com',
         password: 'Password123!',
       });
@@ -82,7 +81,7 @@ describe('RegisterPage', () => {
   });
 
   it('displays API error message on registration failure', async () => {
-    mockedAxios.post.mockRejectedValueOnce({
+    mockedApi.post.mockRejectedValueOnce({
       response: {
         data: {
           message: 'Email already exists',

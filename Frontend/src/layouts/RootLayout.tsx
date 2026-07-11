@@ -1,26 +1,71 @@
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 export default function RootLayout() {
+  const [email, setEmail] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = () => {
+      setEmail(localStorage.getItem('email'));
+    };
+    checkAuth();
+    window.addEventListener('storage', checkAuth);
+    const interval = setInterval(checkAuth, 1000);
+
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+      clearInterval(interval);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('email');
+    setEmail(null);
+    navigate('/login');
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 flex flex-col font-sans">
-      <header className="border-b border-slate-200 dark:border-slate-850 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
+    <div className="min-h-screen bg-white text-black flex flex-col font-sans antialiased">
+      <header className="border-b border-slate-100 bg-white sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xl font-extrabold bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400 bg-clip-text text-transparent">
+            <Link to="/" className="text-lg font-bold tracking-tight text-black">
               Incubyte App
-            </span>
+            </Link>
           </div>
           <nav className="flex items-center gap-6 text-sm font-medium">
-            <Link to="/" className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+            <Link to="/" className="text-slate-600 hover:text-black transition-colors">
               Home
             </Link>
+            {email ? (
+              <>
+                <span className="text-slate-500 font-normal">{email}</span>
+                <button
+                  onClick={handleLogout}
+                  className="text-black hover:underline cursor-pointer"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="text-slate-600 hover:text-black transition-colors">
+                  Login
+                </Link>
+                <Link to="/register" className="text-slate-600 hover:text-black transition-colors">
+                  Register
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       </header>
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 flex flex-col max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-white">
         <Outlet />
       </main>
-      <footer className="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-sm text-slate-500">
+      <footer className="border-t border-slate-100 bg-white py-6 text-center text-xs text-slate-400">
         <p>&copy; {new Date().getFullYear()} Incubyte. All rights reserved.</p>
       </footer>
     </div>
