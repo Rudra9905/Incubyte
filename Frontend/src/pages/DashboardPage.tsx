@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+
 import api from '../lib/axios';
 import type { Vehicle } from '../types';
 
 export default function DashboardPage() {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+
 
   const userRole = localStorage.getItem('role') || 'USER';
   const userEmail = localStorage.getItem('email') || '';
