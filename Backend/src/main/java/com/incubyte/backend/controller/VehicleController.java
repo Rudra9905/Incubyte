@@ -3,6 +3,7 @@ package com.incubyte.backend.controller;
 import com.incubyte.backend.dto.VehicleRequest;
 import com.incubyte.backend.dto.VehicleResponse;
 import com.incubyte.backend.service.VehicleService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class VehicleController {
     }
 
     @PostMapping
-    public ResponseEntity<VehicleResponse> addVehicle(@RequestBody VehicleRequest request) {
+    public ResponseEntity<VehicleResponse> addVehicle(@Valid @RequestBody VehicleRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(vehicleService.addVehicle(request));
     }
 
@@ -43,7 +44,7 @@ public class VehicleController {
     @PutMapping("/{id}")
     public ResponseEntity<VehicleResponse> updateVehicle(
             @PathVariable Long id,
-            @RequestBody VehicleRequest request) {
+            @Valid @RequestBody VehicleRequest request) {
         return ResponseEntity.ok(vehicleService.updateVehicle(id, request));
     }
 
@@ -51,5 +52,17 @@ public class VehicleController {
     public ResponseEntity<Void> deleteVehicle(@PathVariable Long id) {
         vehicleService.deleteVehicle(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/purchase")
+    public ResponseEntity<VehicleResponse> purchaseVehicle(@PathVariable Long id) {
+        return ResponseEntity.ok(vehicleService.purchaseVehicle(id));
+    }
+
+    @PostMapping("/{id}/restock")
+    public ResponseEntity<VehicleResponse> restockVehicle(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "1") int quantity) {
+        return ResponseEntity.ok(vehicleService.restockVehicle(id, quantity));
     }
 }

@@ -177,4 +177,47 @@ class VehicleControllerTest {
 
         verify(vehicleService, never()).deleteVehicle(anyLong());
     }
+
+    @Test
+    @WithMockUser(username = "user@example.com", authorities = "USER")
+    @DisplayName("POST /api/vehicles/{id}/purchase - Success for authenticated User")
+    void testPurchaseVehicle_Success() throws Exception {
+        VehicleResponse response = new VehicleResponse(1L, "Honda", "Civic", "Sedan", BigDecimal.valueOf(25000), 4);
+        when(vehicleService.purchaseVehicle(1L)).thenReturn(response);
+
+        mockMvc.perform(post("/api/vehicles/1/purchase")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.quantity").value(4));
+
+        verify(vehicleService).purchaseVehicle(1L);
+    }
+
+    @Test
+    @WithMockUser(username = "admin@example.com", authorities = "ADMIN")
+    @DisplayName("POST /api/vehicles/{id}/restock - Success as Admin")
+    void testRestockVehicle_AdminSuccess() throws Exception {
+        VehicleResponse response = new VehicleResponse(1L, "Honda", "Civic", "Sedan", BigDecimal.valueOf(25000), 10);
+        when(vehicleService.restockVehicle(1L, 5)).thenReturn(response);
+
+        mockMvc.perform(post("/api/vehicles/1/restock")
+                        .param("quantity", "5")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.quantity").value(10));
+
+        verify(vehicleService).restockVehicle(1L, 5);
+    }
+
+    @Test
+    @WithMockUser(username = "user@example.com", authorities = "USER")
+    @DisplayName("POST /api/vehicles/{id}/restock - Forbidden as normal User")
+    void testRestockVehicle_UserForbidden() throws Exception {
+        mockMvc.perform(post("/api/vehicles/1/restock")
+                        .param("quantity", "5")
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+
+        verify(vehicleService, never()).restockVehicle(anyLong(), anyInt());
+    }
 }

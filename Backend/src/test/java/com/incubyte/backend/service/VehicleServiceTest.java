@@ -3,6 +3,7 @@ package com.incubyte.backend.service;
 import com.incubyte.backend.dto.VehicleRequest;
 import com.incubyte.backend.dto.VehicleResponse;
 import com.incubyte.backend.entity.Vehicle;
+import com.incubyte.backend.exception.VehicleNotFoundException;
 import com.incubyte.backend.repository.VehicleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -96,14 +97,14 @@ class VehicleServiceTest {
     }
 
     @Test
-    @DisplayName("updateVehicle should throw IllegalArgumentException if vehicle does not exist")
+    @DisplayName("updateVehicle should throw VehicleNotFoundException if vehicle does not exist")
     void testUpdateVehicle_NotFound() {
         Long vehicleId = 99L;
         VehicleRequest request = new VehicleRequest("Toyota", "Camry", "Sedan", BigDecimal.valueOf(28000), 8);
 
         when(vehicleRepository.findById(vehicleId)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> vehicleService.updateVehicle(vehicleId, request));
+        assertThrows(VehicleNotFoundException.class, () -> vehicleService.updateVehicle(vehicleId, request));
 
         verify(vehicleRepository, times(1)).findById(vehicleId);
         verify(vehicleRepository, never()).save(any(Vehicle.class));
@@ -123,14 +124,90 @@ class VehicleServiceTest {
     }
 
     @Test
-    @DisplayName("deleteVehicle should throw IllegalArgumentException if vehicle does not exist")
+    @DisplayName("deleteVehicle should throw VehicleNotFoundException if vehicle does not exist")
     void testDeleteVehicle_NotFound() {
         Long vehicleId = 99L;
         when(vehicleRepository.existsById(vehicleId)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> vehicleService.deleteVehicle(vehicleId));
+        assertThrows(VehicleNotFoundException.class, () -> vehicleService.deleteVehicle(vehicleId));
 
         verify(vehicleRepository, times(1)).existsById(vehicleId);
         verify(vehicleRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
+    @DisplayName("purchaseVehicle should decrease quantity by 1 when stock is available")
+    void testPurchaseVehicle_Success() {
+        Long id = 1L;
+        Vehicle vehicle = new Vehicle(id, "Honda", "Civic", "Sedan", BigDecimal.valueOf(25000), 5);
+        Vehicle savedVehicle = new Vehicle(id, "Honda", "Civic", "Sedan", BigDecimal.valueOf(25000), 4);
+
+        when(vehicleRepository.findById(id)).thenReturn(Optional.of(vehicle));
+        when(vehicleRepository.save(any(Vehicle.class))).thenReturn(savedVehicle);
+
+        VehicleResponse response = vehicleService.purchaseVehicle(id);
+
+        assertNotNull(response);
+        assertEquals(4, response.getQuantity());
+        verify(vehicleRepository).save(any(Vehicle.class));
+    }
+
+    @Test
+    @DisplayName("purchaseVehicle should throw IllegalStateException when out of stock")
+    void testPurchaseVehicle_OutOfStock() {
+        Long id = 1L;
+        Vehicle vehicle = new Vehicle(id, "Honda", "Civic", "Sedan", BigDecimal.valueOf(25000), 0);
+
+        when(vehicleRepository.findById(id)).thenReturn(Optional.of(vehicle));
+
+        assertThrows(IllegalStateException.class, () -> vehicleService.purchaseVehicle(id));
+        verify(vehicleRepository, never()).save(any(Vehicle.class));
+    }
+
+    @Test
+    @DisplayName("purchaseVehicle should throw VehicleNotFoundException when vehicle not found")
+    void testPurchaseVehicle_NotFound() {
+        Long id = 99L;
+        when(vehicleRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(VehicleNotFoundException.class, () -> vehicleService.purchaseVehicle(id));
+        verify(vehicleRepository, never()).save(any(Vehicle.class));
+    }
+
+    @Test
+    @DisplayName("restockVehicle should increase quantity by specified amount")
+    void testRestockVehicle_Success() {
+        Long id = 1L;
+        Vehicle vehicle = new Vehicle(id, "Honda", "Civic", "Sedan", BigDecimal.valueOf(25000), 5);
+        Vehicle savedVehicle = new Vehicle(id, "Honda", "Civic", "Sedan", BigDecimal.valueOf(25000), 15);
+
+        when(vehicleRepository.findById(id)).thenReturn(Optional.of(vehicle));
+        when(vehicleRepository.save(any(Vehicle.class))).thenReturn(savedVehicle);
+
+        VehicleResponse response = vehicleService.restockVehicle(id, 10);
+
+        assertNotNull(response);
+        assertEquals(15, response.getQuantity());
+        verify(vehicleRepository).save(any(Vehicle.class));
+    }
+
+    @Test
+    @DisplayName("restockVehicle should throw IllegalArgumentException when quantity is non-positive")
+    void testRestockVehicle_InvalidQuantity() {
+        Long id = 1L;
+
+        assertThrows(IllegalArgumentException.class, () -> vehicleService.restockVehicle(id, 0));
+        assertThrows(IllegalArgumentException.class, () -> vehicleService.restockVehicle(id, -5));
+        verify(vehicleRepository, never()).save(any(Vehicle.class));
+    }
+
+    @Test
+    @DisplayName("restockVehicle should throw VehicleNotFoundException when vehicle not found")
+    void testRestockVehicle_NotFound() {
+        Long id = 99L;
+        when(vehicleRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(VehicleNotFoundException.class, () -> vehicleService.restockVehicle(id, 5));
+        verify(vehicleRepository, never()).save(any(Vehicle.class));
     }
 }
