@@ -6,6 +6,7 @@ import com.incubyte.backend.dto.RegistrationRequest;
 import com.incubyte.backend.dto.RegistrationResponse;
 import com.incubyte.backend.service.AuthService;
 import com.incubyte.backend.service.RegistrationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,11 +27,13 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<RegistrationResponse> register(@RequestBody RegistrationRequest request) {
-        throw new UnsupportedOperationException("Register endpoint is not implemented yet.");
+        RegistrationResponse response = registrationService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
-        throw new UnsupportedOperationException("Login endpoint is not implemented yet.");
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 }

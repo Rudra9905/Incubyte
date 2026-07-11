@@ -42,6 +42,9 @@ class AuthControllerTest {
     @MockBean
     private AuthService authService;
 
+    @MockBean
+    private com.incubyte.backend.service.JwtService jwtService;
+
     @Test
     @WithMockUser
     @DisplayName("POST /api/auth/register - Success should return 201 Created")
