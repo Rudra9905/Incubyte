@@ -2,33 +2,29 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
-
-type RegisterFormInputs = {
-  email: string;
-  password: string;
-};
+import type { AuthCredentials } from '../types';
 
 export default function RegisterPage() {
-  const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormInputs>();
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const { register, handleSubmit, formState: { errors } } = useForm<AuthCredentials>();
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [authSuccess, setAuthSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const onSubmit = async (data: RegisterFormInputs) => {
+  const executeRegistration = async (data: AuthCredentials) => {
     setLoading(true);
-    setErrorMessage(null);
-    setSuccessMessage(null);
+    setAuthError(null);
+    setAuthSuccess(null);
     try {
       await api.post('/auth/register', data);
-      setSuccessMessage('Registration successful');
+      setAuthSuccess('Registration successful');
 
       setTimeout(() => {
         navigate('/login');
       }, 1500);
     } catch (error: any) {
       const msg = error.response?.data?.message || 'Registration failed';
-      setErrorMessage(msg);
+      setAuthError(msg);
     } finally {
       setLoading(false);
     }
@@ -49,19 +45,19 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        {errorMessage && (
+        {authError && (
           <div className="p-3 bg-red-50 border border-red-100 text-red-700 text-sm rounded-lg text-center">
-            {errorMessage}
+            {authError}
           </div>
         )}
 
-        {successMessage && (
+        {authSuccess && (
           <div className="p-3 bg-green-50 border border-green-100 text-green-700 text-sm rounded-lg text-center">
-            {successMessage}
+            {authSuccess}
           </div>
         )}
 
-        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+        <form className="space-y-4" onSubmit={handleSubmit(executeRegistration)}>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-slate-700">
               Email address
@@ -75,7 +71,7 @@ export default function RegisterPage() {
               placeholder="you@example.com"
             />
             {errors.email && (
-              <p className="mt-1 text-xs text-red-650">{errors.email.message}</p>
+              <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>
             )}
           </div>
 

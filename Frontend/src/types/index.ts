@@ -10,3 +10,8 @@ export interface ApiError {
   status?: number;
   errors?: Record<string, string[]>;
 }
+
+export interface AuthCredentials {
+  email: string;
+  password: string;
+}

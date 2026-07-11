@@ -2,35 +2,31 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
-
-type LoginFormInputs = {
-  email: string;
-  password: string;
-};
+import type { AuthCredentials } from '../types';
 
 export default function LoginPage() {
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormInputs>();
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const { register, handleSubmit, formState: { errors } } = useForm<AuthCredentials>();
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [authSuccess, setAuthSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const onSubmit = async (data: LoginFormInputs) => {
+  const executeLogin = async (data: AuthCredentials) => {
     setLoading(true);
-    setErrorMessage(null);
-    setSuccessMessage(null);
+    setAuthError(null);
+    setAuthSuccess(null);
     try {
       const response = await api.post('/auth/login', data);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('email', response.data.email);
-      setSuccessMessage('Login successful');
+      setAuthSuccess('Login successful');
 
       setTimeout(() => {
         navigate('/');
       }, 1000);
     } catch (error: any) {
       const msg = error.response?.data?.message || 'Login failed';
-      setErrorMessage(msg);
+      setAuthError(msg);
     } finally {
       setLoading(false);
     }
@@ -51,19 +47,19 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {errorMessage && (
+        {authError && (
           <div className="p-3 bg-red-50 border border-red-100 text-red-750 text-sm rounded-lg text-center">
-            {errorMessage}
+            {authError}
           </div>
         )}
 
-        {successMessage && (
+        {authSuccess && (
           <div className="p-3 bg-green-50 border border-green-100 text-green-750 text-sm rounded-lg text-center">
-            {successMessage}
+            {authSuccess}
           </div>
         )}
 
-        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+        <form className="space-y-4" onSubmit={handleSubmit(executeLogin)}>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-slate-700">
               Email address
