@@ -54,6 +54,7 @@ public class VehicleController {
         return ResponseEntity.noContent().build();
     }
 
+    /*
     @PostMapping("/{id}/purchase")
     public ResponseEntity<VehicleResponse> purchaseVehicle(@PathVariable Long id) {
         return ResponseEntity.ok(vehicleService.purchaseVehicle(id));
@@ -65,4 +66,5 @@ public class VehicleController {
             @RequestParam(defaultValue = "1") int quantity) {
         return ResponseEntity.ok(vehicleService.restockVehicle(id, quantity));
     }
+    */
 }
