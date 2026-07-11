@@ -32,13 +32,11 @@ export default function RootLayout() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link to="/" className="text-lg font-bold tracking-tight text-black">
-              Incubyte App
+              Incubyte Kata
             </Link>
           </div>
           <nav className="flex items-center gap-6 text-sm font-medium">
-            <Link to="/" className="text-slate-600 hover:text-black transition-colors">
-              Home
-            </Link>
+
             {email ? (
               <>
                 <span className="text-slate-500 font-normal">{email}</span>

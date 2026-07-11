@@ -202,12 +202,6 @@ export default function DashboardPage() {
           <h1 className="text-xl font-bold tracking-tight">Car Dealership</h1>
           {userEmail && <p className="text-xs text-slate-500 mt-0.5">{userEmail} ({userRole})</p>}
         </div>
-        <button
-          onClick={handleLogout}
-          className="border border-black text-black px-4 py-1.5 hover:bg-black hover:text-white transition text-sm font-medium"
-        >
-          Sign Out
-        </button>
       </header>
 
       {/* Main Body */}
