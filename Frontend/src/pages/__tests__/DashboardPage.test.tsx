@@ -154,9 +154,7 @@ describe('DashboardPage', () => {
     await waitFor(() => {
       expect(mockedApi.get).toHaveBeenCalledWith('/vehicles/search', {
         params: {
-          make: 'Honda',
-          model: 'Honda',
-          category: 'Honda',
+          query: 'Honda',
           minPrice: '20000',
           maxPrice: '30000'
         }
