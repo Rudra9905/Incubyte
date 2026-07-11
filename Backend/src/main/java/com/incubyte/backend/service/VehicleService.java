@@ -56,8 +56,14 @@ public class VehicleService {
     }
 
     @Transactional(readOnly = true)
-    public List<VehicleResponse> searchVehicles(String make, String model, String category, BigDecimal minPrice, BigDecimal maxPrice) {
-        return vehicleRepository.searchVehicles(make, model, category, minPrice, maxPrice).stream()
+    public List<VehicleResponse> searchVehicles(String query, String make, String model, String category, BigDecimal minPrice, BigDecimal maxPrice) {
+        
+        String normQuery    = (query    != null && query.isBlank())    ? null : query;
+        String normMake     = (make     != null && make.isBlank())     ? null : make;
+        String normModel    = (model    != null && model.isBlank())    ? null : model;
+        String normCategory = (category != null && category.isBlank()) ? null : category;
+
+        return vehicleRepository.searchVehicles(normQuery, normMake, normModel, normCategory, minPrice, maxPrice).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

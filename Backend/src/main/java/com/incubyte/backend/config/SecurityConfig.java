@@ -44,6 +44,13 @@ public class SecurityConfig {
                     "/swagger-ui.html",
                     "/actuator/**"
                 ).permitAll()
+                // Vehicle read endpoints — any authenticated user (USER or ADMIN)
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/vehicles").authenticated()
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/vehicles/search").authenticated()
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/vehicles/**").authenticated()
+                // Vehicle purchase — any authenticated user
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/vehicles/*/purchase").authenticated()
+                // Admin-only operations
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/vehicles/*/restock").hasAuthority("ADMIN")
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/vehicles").hasAuthority("ADMIN")
                 .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/vehicles/**").hasAuthority("ADMIN")

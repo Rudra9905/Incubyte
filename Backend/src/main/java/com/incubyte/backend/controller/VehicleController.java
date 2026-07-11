@@ -33,12 +33,13 @@ public class VehicleController {
 
     @GetMapping("/search")
     public ResponseEntity<List<VehicleResponse>> searchVehicles(
+            @RequestParam(required = false) String query,
             @RequestParam(required = false) String make,
             @RequestParam(required = false) String model,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice) {
-        return ResponseEntity.ok(vehicleService.searchVehicles(make, model, category, minPrice, maxPrice));
+        return ResponseEntity.ok(vehicleService.searchVehicles(query, make, model, category, minPrice, maxPrice));
     }
 
     @PutMapping("/{id}")

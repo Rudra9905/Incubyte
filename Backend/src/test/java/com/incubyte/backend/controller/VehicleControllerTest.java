@@ -106,7 +106,7 @@ class VehicleControllerTest {
     void testSearchVehicles_Success() throws Exception {
         VehicleResponse response = new VehicleResponse(1L, "Honda", "Civic", "Sedan", BigDecimal.valueOf(25000), 5);
 
-        when(vehicleService.searchVehicles(eq("Honda"), eq("Civic"), any(), any(), any()))
+        when(vehicleService.searchVehicles(isNull(), eq("Honda"), eq("Civic"), any(), any(), any()))
                 .thenReturn(Arrays.asList(response));
 
         mockMvc.perform(get("/api/vehicles/search")
@@ -116,7 +116,7 @@ class VehicleControllerTest {
                 .andExpect(jsonPath("$.size()").value(1))
                 .andExpect(jsonPath("$[0].make").value("Honda"));
 
-        verify(vehicleService).searchVehicles(eq("Honda"), eq("Civic"), any(), any(), any());
+        verify(vehicleService).searchVehicles(isNull(), eq("Honda"), eq("Civic"), any(), any(), any());
     }
 
     @Test
