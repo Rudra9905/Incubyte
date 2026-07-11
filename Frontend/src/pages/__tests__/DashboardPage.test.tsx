@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -65,13 +65,15 @@ describe('DashboardPage', () => {
     renderComponent();
 
     // Corolla has qty 5, purchase button should be enabled
-    const corollaCard = await screen.findByText('Toyota Corolla');
-    const corollaPurchaseBtn = screen.getByRole('button', { name: /purchase/i, ...corollaCard });
+    const corollaText = await screen.findByText('Toyota Corolla');
+    const corollaCard = corollaText.closest('.border') as HTMLElement;
+    const corollaPurchaseBtn = within(corollaCard).getByRole('button', { name: /purchase/i });
     expect(corollaPurchaseBtn).not.toBeDisabled();
 
     // Civic has qty 0, purchase button should be disabled
-    const civicCard = await screen.findByText('Honda Civic');
-    const civicPurchaseBtn = screen.getByRole('button', { name: /out of stock/i, ...civicCard });
+    const civicText = await screen.findByText('Honda Civic');
+    const civicCard = civicText.closest('.border') as HTMLElement;
+    const civicPurchaseBtn = within(civicCard).getByRole('button', { name: /out of stock/i });
     expect(civicPurchaseBtn).toBeDisabled();
   });
 
@@ -82,7 +84,7 @@ describe('DashboardPage', () => {
       data: [{ id: 1, make: 'Toyota', model: 'Corolla', category: 'Sedan', price: 22000, quantity: 5 }],
     });
 
-    const { rerender } = renderComponent();
+    renderComponent();
 
     await screen.findByText('Toyota Corolla');
     expect(screen.queryByRole('button', { name: /add vehicle/i })).not.toBeInTheDocument();
@@ -121,6 +123,44 @@ describe('DashboardPage', () => {
 
     await waitFor(() => {
       expect(mockedApi.post).toHaveBeenCalledWith('/vehicles/1/purchase');
+    });
+  });
+
+  it('triggers search API only when Search button is clicked', async () => {
+    mockedApi.get.mockResolvedValueOnce({
+      data: [{ id: 1, make: 'Honda', model: 'Civic', category: 'Sedan', price: 25000, quantity: 5 }],
+    });
+
+    renderComponent();
+
+    // 1. Find and type into search inputs
+    const searchInput = screen.getByPlaceholderText(/search by make, model, or category/i);
+    fireEvent.change(searchInput, { target: { value: 'Honda' } });
+
+    const minPriceInput = screen.getByPlaceholderText(/min price/i);
+    fireEvent.change(minPriceInput, { target: { value: '20000' } });
+
+    const maxPriceInput = screen.getByPlaceholderText(/max price/i);
+    fireEvent.change(maxPriceInput, { target: { value: '30000' } });
+
+    // The API should NOT be called with search query immediately on typing (should wait for button click)
+    expect(mockedApi.get).not.toHaveBeenCalledWith('/vehicles/search', expect.any(Object));
+
+    // 2. Click Search button
+    const searchButton = screen.getByRole('button', { name: /search/i });
+    fireEvent.click(searchButton);
+
+    // 3. Verify the search API is called with the correct parameters
+    await waitFor(() => {
+      expect(mockedApi.get).toHaveBeenCalledWith('/vehicles/search', {
+        params: {
+          make: 'Honda',
+          model: 'Honda',
+          category: 'Honda',
+          minPrice: '20000',
+          maxPrice: '30000'
+        }
+      });
     });
   });
 });
