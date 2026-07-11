@@ -2,6 +2,7 @@ package com.incubyte.backend.service;
 
 import com.incubyte.backend.dto.AuthResponse;
 import com.incubyte.backend.dto.LoginRequest;
+import com.incubyte.backend.entity.Role;
 import com.incubyte.backend.entity.User;
 import com.incubyte.backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +56,7 @@ class AuthServiceTest {
                 .id(1L)
                 .email(email)
                 .password(hashedPassword)
-                .role("USER")
+                .role(Role.USER)
                 .build();
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
@@ -87,7 +88,7 @@ class AuthServiceTest {
                 .id(2L)
                 .email(email)
                 .password(hashedPassword)
-                .role("ADMIN")
+                .role(Role.ADMIN)
                 .build();
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
@@ -133,7 +134,7 @@ class AuthServiceTest {
                 .id(1L)
                 .email(email)
                 .password(hashedPassword)
-                .role("USER")
+                .role(Role.USER)
                 .build();
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));

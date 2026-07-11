@@ -2,6 +2,7 @@ package com.incubyte.backend.service;
 
 import com.incubyte.backend.dto.RegistrationRequest;
 import com.incubyte.backend.dto.RegistrationResponse;
+import com.incubyte.backend.entity.Role;
 import com.incubyte.backend.entity.User;
 import com.incubyte.backend.exception.DuplicateEmailException;
 import com.incubyte.backend.repository.UserRepository;
@@ -38,7 +39,14 @@ public class RegistrationService {
         String hashedPassword = passwordEncoder.encode(request.getPassword());
 
         String requestedRole = request.getRole();
-        String role = (requestedRole == null || requestedRole.trim().isEmpty()) ? "USER" : requestedRole.toUpperCase();
+        Role role = Role.USER;
+        if (requestedRole != null && !requestedRole.trim().isEmpty()) {
+            try {
+                role = Role.valueOf(requestedRole.toUpperCase().trim());
+            } catch (IllegalArgumentException e) {
+                role = Role.USER;
+            }
+        }
 
         User user = User.builder()
                 .email(request.getEmail())
@@ -48,6 +56,6 @@ public class RegistrationService {
 
         User savedUser = userRepository.save(user);
 
-        return new RegistrationResponse(savedUser.getId(), savedUser.getEmail(), savedUser.getRole());
+        return new RegistrationResponse(savedUser.getId(), savedUser.getEmail(), savedUser.getRole().name());
     }
 }

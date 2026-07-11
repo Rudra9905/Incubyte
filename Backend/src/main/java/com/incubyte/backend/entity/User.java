@@ -1,6 +1,8 @@
 package com.incubyte.backend.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,16 +17,18 @@ public class User {
 
     private String email;
     private String password;
-    private String role;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     public User() {
     }
 
     public User(Long id, String email, String password) {
-        this(id, email, password, "USER");
+        this(id, email, password, Role.USER);
     }
 
-    public User(Long id, String email, String password, String role) {
+    public User(Long id, String email, String password, Role role) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -55,11 +59,11 @@ public class User {
         this.password = password;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
@@ -71,7 +75,7 @@ public class User {
         private Long id;
         private String email;
         private String password;
-        private String role = "USER";
+        private Role role = Role.USER;
 
         UserBuilder() {
         }
@@ -91,7 +95,7 @@ public class User {
             return this;
         }
 
-        public UserBuilder role(String role) {
+        public UserBuilder role(Role role) {
             this.role = role;
             return this;
         }

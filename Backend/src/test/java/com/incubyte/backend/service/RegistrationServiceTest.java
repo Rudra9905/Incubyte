@@ -2,6 +2,7 @@ package com.incubyte.backend.service;
 
 import com.incubyte.backend.dto.RegistrationRequest;
 import com.incubyte.backend.dto.RegistrationResponse;
+import com.incubyte.backend.entity.Role;
 import com.incubyte.backend.entity.User;
 import com.incubyte.backend.exception.DuplicateEmailException;
 import com.incubyte.backend.exception.InvalidEmailException;
@@ -55,7 +56,7 @@ class RegistrationServiceTest {
                 .id(1L)
                 .email(email)
                 .password(hashedPassword)
-                .role("USER")
+                .role(Role.USER)
                 .build();
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
@@ -74,7 +75,7 @@ class RegistrationServiceTest {
         User capturedUser = userCaptor.getValue();
         assertEquals(email, capturedUser.getEmail());
         assertEquals(hashedPassword, capturedUser.getPassword());
-        assertEquals("USER", capturedUser.getRole());
+        assertEquals(Role.USER, capturedUser.getRole());
     }
 
     @Test
@@ -93,7 +94,7 @@ class RegistrationServiceTest {
                 .id(2L)
                 .email(email)
                 .password(hashedPassword)
-                .role("ADMIN")
+                .role(Role.ADMIN)
                 .build();
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
@@ -107,7 +108,7 @@ class RegistrationServiceTest {
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(userCaptor.capture());
         User capturedUser = userCaptor.getValue();
-        assertEquals("ADMIN", capturedUser.getRole());
+        assertEquals(Role.ADMIN, capturedUser.getRole());
     }
 
     @Test
@@ -183,7 +184,7 @@ class RegistrationServiceTest {
                 .id(2L)
                 .email(email)
                 .password(hashedPassword)
-                .role("USER")
+                .role(Role.USER)
                 .build();
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
