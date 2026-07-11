@@ -30,13 +30,13 @@ class SecurityIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @DisplayName("Accessing protected endpoints with valid JWT token should succeed (returning 404 as endpoint is not yet implemented)")
+    @DisplayName("Accessing protected endpoints with valid JWT token should succeed")
     void testProtectedEndpoint_SuccessWithToken() throws Exception {
         String token = jwtService.generateToken("user@example.com");
 
         mockMvc.perform(get("/api/vehicles")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
     }
 }

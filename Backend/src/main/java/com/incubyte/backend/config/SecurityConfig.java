@@ -44,6 +44,10 @@ public class SecurityConfig {
                     "/swagger-ui.html",
                     "/actuator/**"
                 ).permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/vehicles/*/restock").hasAuthority("ADMIN")
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/vehicles").hasAuthority("ADMIN")
+                .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/vehicles/**").hasAuthority("ADMIN")
+                .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/vehicles/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

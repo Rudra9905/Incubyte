@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(VehicleController.class)
+@org.springframework.context.annotation.Import({com.incubyte.backend.config.SecurityConfig.class, com.incubyte.backend.config.JwtAuthenticationFilter.class})
 class VehicleControllerTest {
 
     @Autowired
