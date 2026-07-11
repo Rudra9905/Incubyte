@@ -37,11 +37,12 @@ describe('RegisterPage', () => {
     );
   };
 
-  it('renders email and password inputs and register button', () => {
+  it('renders email, password, role select inputs and register button', () => {
     renderComponent();
 
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/role/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /register/i })).toBeInTheDocument();
   });
 
@@ -55,11 +56,12 @@ describe('RegisterPage', () => {
     expect(await screen.findByText(/password is required/i)).toBeInTheDocument();
   });
 
-  it('calls register API and shows success message on successful submit', async () => {
+  it('calls register API with default USER role on successful submit', async () => {
     mockedApi.post.mockResolvedValueOnce({
       data: {
         id: 1,
         email: 'newuser@example.com',
+        role: 'USER',
       },
     });
 
@@ -67,6 +69,7 @@ describe('RegisterPage', () => {
 
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'newuser@example.com' } });
     fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'Password123!' } });
+    // Keep default value of Role select as USER
 
     fireEvent.click(screen.getByRole('button', { name: /register/i }));
 
@@ -74,6 +77,35 @@ describe('RegisterPage', () => {
       expect(mockedApi.post).toHaveBeenCalledWith('/auth/register', {
         email: 'newuser@example.com',
         password: 'Password123!',
+        role: 'USER',
+      });
+    });
+
+    expect(await screen.findByText(/registration successful/i)).toBeInTheDocument();
+  });
+
+  it('calls register API with custom ADMIN role on successful submit', async () => {
+    mockedApi.post.mockResolvedValueOnce({
+      data: {
+        id: 2,
+        email: 'admin@example.com',
+        role: 'ADMIN',
+      },
+    });
+
+    renderComponent();
+
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'admin@example.com' } });
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'Password123!' } });
+    fireEvent.change(screen.getByLabelText(/role/i), { target: { value: 'ADMIN' } });
+
+    fireEvent.click(screen.getByRole('button', { name: /register/i }));
+
+    await waitFor(() => {
+      expect(mockedApi.post).toHaveBeenCalledWith('/auth/register', {
+        email: 'admin@example.com',
+        password: 'Password123!',
+        role: 'ADMIN',
       });
     });
 

@@ -19,6 +19,7 @@ export default function LoginPage() {
       const response = await api.post('/auth/login', data);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('email', response.data.email);
+      localStorage.setItem('role', response.data.role);
       setAuthSuccess('Login successful');
 
       setTimeout(() => {

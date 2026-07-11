@@ -37,13 +37,17 @@ public class RegistrationService {
 
         String hashedPassword = passwordEncoder.encode(request.getPassword());
 
+        String requestedRole = request.getRole();
+        String role = (requestedRole == null || requestedRole.trim().isEmpty()) ? "USER" : requestedRole.toUpperCase();
+
         User user = User.builder()
                 .email(request.getEmail())
                 .password(hashedPassword)
+                .role(role)
                 .build();
 
         User savedUser = userRepository.save(user);
 
-        return new RegistrationResponse(savedUser.getId(), savedUser.getEmail());
+        return new RegistrationResponse(savedUser.getId(), savedUser.getEmail(), savedUser.getRole());
     }
 }

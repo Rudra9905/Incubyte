@@ -92,6 +92,20 @@ export default function RegisterPage() {
             )}
           </div>
 
+          <div>
+            <label htmlFor="role" className="block text-sm font-medium text-slate-700">
+              Role
+            </label>
+            <select
+              id="role"
+              {...register('role')}
+              className="mt-1 block w-full px-3 py-2 border border-slate-200 rounded-lg text-black focus:outline-none focus:ring-1 focus:ring-black focus:border-black sm:text-sm bg-white"
+            >
+              <option value="USER">USER</option>
+              <option value="ADMIN">ADMIN</option>
+            </select>
+          </div>
+
           <button
             type="submit"
             disabled={loading}

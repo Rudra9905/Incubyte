@@ -56,11 +56,12 @@ describe('LoginPage', () => {
     expect(await screen.findByText(/password is required/i)).toBeInTheDocument();
   });
 
-  it('calls login API, stores token, and shows success message on successful submit', async () => {
+  it('calls login API, stores token, email, and role, and shows success message on successful submit', async () => {
     mockedApi.post.mockResolvedValueOnce({
       data: {
         token: 'fake-jwt-token',
         email: 'user@example.com',
+        role: 'ADMIN',
       },
     });
 
@@ -81,6 +82,7 @@ describe('LoginPage', () => {
     await waitFor(() => {
       expect(localStorage.getItem('token')).toBe('fake-jwt-token');
       expect(localStorage.getItem('email')).toBe('user@example.com');
+      expect(localStorage.getItem('role')).toBe('ADMIN');
     });
 
     expect(await screen.findByText(/login successful/i)).toBeInTheDocument();

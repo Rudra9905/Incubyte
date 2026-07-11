@@ -14,4 +14,5 @@ export interface ApiError {
 export interface AuthCredentials {
   email: string;
   password: string;
+  role?: string;
 }
