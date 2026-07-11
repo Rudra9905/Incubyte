@@ -12,10 +12,15 @@ export default function DashboardPage() {
   const userEmail = localStorage.getItem('email') || '';
   const isAdmin = userRole === 'ADMIN';
 
-  // Search filter states
-  const [searchQuery, setSearchQuery] = useState('');
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
+  // Search filter input states (unsubmitted)
+  const [searchQueryInput, setSearchQueryInput] = useState('');
+  const [minPriceInput, setMinPriceInput] = useState('');
+  const [maxPriceInput, setMaxPriceInput] = useState('');
+
+  // Active filter states (submitted values)
+  const [activeSearchQuery, setActiveSearchQuery] = useState('');
+  const [activeMinPrice, setActiveMinPrice] = useState('');
+  const [activeMaxPrice, setActiveMaxPrice] = useState('');
 
   // Modal / Form states
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -31,18 +36,18 @@ export default function DashboardPage() {
 
   // Fetch Vehicles
   const { data: vehicles = [], isLoading, error } = useQuery<Vehicle[]>({
-    queryKey: ['vehicles', searchQuery, minPrice, maxPrice],
+    queryKey: ['vehicles', activeSearchQuery, activeMinPrice, activeMaxPrice],
     queryFn: async () => {
       // Determine endpoint based on whether filters are present
-      if (searchQuery || minPrice || maxPrice) {
+      if (activeSearchQuery || activeMinPrice || activeMaxPrice) {
         const params: Record<string, any> = {};
-        if (searchQuery) {
-          params.make = searchQuery;
-          params.model = searchQuery;
-          params.category = searchQuery;
+        if (activeSearchQuery) {
+          params.make = activeSearchQuery;
+          params.model = activeSearchQuery;
+          params.category = activeSearchQuery;
         }
-        if (minPrice) params.minPrice = minPrice;
-        if (maxPrice) params.maxPrice = maxPrice;
+        if (activeMinPrice) params.minPrice = activeMinPrice;
+        if (activeMaxPrice) params.maxPrice = activeMaxPrice;
         
         const res = await api.get('/vehicles/search', { params });
         return res.data;
@@ -177,27 +182,37 @@ export default function DashboardPage() {
             <input
               type="text"
               placeholder="Search by make, model, or category"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchQueryInput}
+              onChange={(e) => setSearchQueryInput(e.target.value)}
               className="w-full sm:max-w-md border border-black px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black"
             />
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <input
                 type="number"
                 placeholder="Min Price"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
+                value={minPriceInput}
+                onChange={(e) => setMinPriceInput(e.target.value)}
                 className="w-full sm:w-28 border border-black px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black"
               />
               <span className="text-sm">-</span>
               <input
                 type="number"
                 placeholder="Max Price"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
+                value={maxPriceInput}
+                onChange={(e) => setMaxPriceInput(e.target.value)}
                 className="w-full sm:w-28 border border-black px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black"
               />
             </div>
+            <button
+              onClick={() => {
+                setActiveSearchQuery(searchQueryInput);
+                setActiveMinPrice(minPriceInput);
+                setActiveMaxPrice(maxPriceInput);
+              }}
+              className="w-full sm:w-auto border border-black bg-black text-white px-5 py-2 text-sm font-semibold hover:bg-white hover:text-black transition cursor-pointer"
+            >
+              Search
+            </button>
           </div>
 
           {isAdmin && (
