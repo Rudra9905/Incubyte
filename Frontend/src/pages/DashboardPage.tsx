@@ -147,10 +147,7 @@ export default function DashboardPage() {
     setActiveMaxPrice('');
   };
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
-  };
+
 
   const openAddModal = () => {
     resetForm();
