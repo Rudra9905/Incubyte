@@ -22,6 +22,8 @@ export default function DashboardPage() {
   const [activeMinPrice, setActiveMinPrice] = useState('');
   const [activeMaxPrice, setActiveMaxPrice] = useState('');
 
+  const hasActiveFilters = !!(activeSearchQuery || activeMinPrice || activeMaxPrice);
+
   // Modal / Form states
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -42,9 +44,7 @@ export default function DashboardPage() {
       if (activeSearchQuery || activeMinPrice || activeMaxPrice) {
         const params: Record<string, any> = {};
         if (activeSearchQuery) {
-          params.make = activeSearchQuery;
-          params.model = activeSearchQuery;
-          params.category = activeSearchQuery;
+          params.query = activeSearchQuery;
         }
         if (activeMinPrice) params.minPrice = activeMinPrice;
         if (activeMaxPrice) params.maxPrice = activeMaxPrice;
@@ -109,6 +109,21 @@ export default function DashboardPage() {
     setCategory('');
     setPrice('');
     setQuantity('');
+  };
+
+  const handleSearch = () => {
+    setActiveSearchQuery(searchQueryInput);
+    setActiveMinPrice(minPriceInput);
+    setActiveMaxPrice(maxPriceInput);
+  };
+
+  const handleClear = () => {
+    setSearchQueryInput('');
+    setMinPriceInput('');
+    setMaxPriceInput('');
+    setActiveSearchQuery('');
+    setActiveMinPrice('');
+    setActiveMaxPrice('');
   };
 
   const handleLogout = () => {
@@ -184,6 +199,7 @@ export default function DashboardPage() {
               placeholder="Search by make, model, or category"
               value={searchQueryInput}
               onChange={(e) => setSearchQueryInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
               className="w-full sm:max-w-md border border-black px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black"
             />
             <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -192,6 +208,7 @@ export default function DashboardPage() {
                 placeholder="Min Price"
                 value={minPriceInput}
                 onChange={(e) => setMinPriceInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
                 className="w-full sm:w-28 border border-black px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black"
               />
               <span className="text-sm">-</span>
@@ -200,19 +217,26 @@ export default function DashboardPage() {
                 placeholder="Max Price"
                 value={maxPriceInput}
                 onChange={(e) => setMaxPriceInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
                 className="w-full sm:w-28 border border-black px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black"
               />
             </div>
-            <button
-              onClick={() => {
-                setActiveSearchQuery(searchQueryInput);
-                setActiveMinPrice(minPriceInput);
-                setActiveMaxPrice(maxPriceInput);
-              }}
-              className="w-full sm:w-auto border border-black bg-black text-white px-5 py-2 text-sm font-semibold hover:bg-white hover:text-black transition cursor-pointer"
-            >
-              Search
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleSearch}
+                className="w-full sm:w-auto border border-black bg-black text-white px-5 py-2 text-sm font-semibold hover:bg-white hover:text-black transition cursor-pointer"
+              >
+                Search
+              </button>
+              {hasActiveFilters && (
+                <button
+                  onClick={handleClear}
+                  className="w-full sm:w-auto border border-black text-black px-4 py-2 text-sm font-semibold hover:bg-slate-100 transition cursor-pointer"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
           </div>
 
           {isAdmin && (

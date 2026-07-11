@@ -21,15 +21,10 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor for API calls
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Global error handling, e.g. token expiration
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      // Optional: redirect to login or handle session timeout
-    }
+   
     return Promise.reject(error);
   }
 );
