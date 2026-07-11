@@ -36,7 +36,7 @@ class RegistrationServiceTest {
 
     @BeforeEach
     void setUp() {
-        registrationService = new RegistrationService(userRepository, passwordEncoder);
+        registrationService = new RegistrationService(userRepository, passwordEncoder, new RegistrationValidator());
     }
 
     @Test
