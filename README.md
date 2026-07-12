@@ -10,6 +10,7 @@ A comprehensive full-stack web application designed for car dealerships to manag
 - **Stock Management**: One-click restock functionality for vehicles.
 - **Responsive UI**: A modern, clean, and responsive single-page application (SPA).
 - **Robust Security**: Protected API endpoints and secure password hashing.
+- **Uptime Monitoring**: Dedicated public health check endpoint (`/api/health`) to configure ping tools (like Uptime Robot) and prevent backend sleep cycles on hosting platforms (e.g., Render/Heroku).
 
 ## 🛠️ Technology Stack
 
@@ -96,11 +97,12 @@ The project follows a Test-Driven Development (TDD) approach with comprehensive 
 
 ### Backend Test Results
 - **Frameworks**: JUnit 5, Mockito, Spring Boot Test
-- **Total Tests Run**: 72
+- **Total Tests Run**: 73
 - **Failures**: 0
 - **Errors**: 0
 - **Execution Time**: ~16.7s
 - **Test Suites Covered**:
+  - `HealthControllerTest` (1 test)
   - `VehicleControllerTest` (12 tests)
   - `AuthServiceTest` (4 tests)
   - `JwtServiceTest` (3 tests)
