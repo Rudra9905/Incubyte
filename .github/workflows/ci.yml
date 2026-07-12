@@ -27,6 +27,16 @@ jobs:
         run: |
           mvn clean test
 
+      - name: Generate JaCoCo Coverage Report Summary
+        run: |
+          python .github/scripts/parse_jacoco.py
+
+      - name: Upload JaCoCo Coverage Report Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: Backend/target/site/jacoco/
+
   frontend-test:
     name: Frontend Build & Test
     runs-on: ubuntu-latest
