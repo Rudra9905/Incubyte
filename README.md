@@ -1,5 +1,7 @@
 # Car Dealership Inventory System
 
+[![CI/CD Pipeline](https://github.com/Rudra9905/Incubyte/actions/workflows/ci.yml/badge.svg)](https://github.com/Rudra9905/Incubyte/actions/workflows/ci.yml)
+
 A comprehensive full-stack web application designed for car dealerships to manage their vehicle inventory efficiently. The application provides a secure platform for staff to track vehicles, manage stock levels, and perform advanced searches.
 
 ## 🚀 Features
@@ -137,6 +139,15 @@ After Implementing the minimal code for passing all test cases
 <img width="940" height="499" alt="image" src="https://github.com/user-attachments/assets/beb82b23-42fd-42d2-bec2-6338ed839041" />
 
 
+
+## 🔄 CI/CD Pipeline
+
+The project features a fully automated CI/CD pipeline using **GitHub Actions**. Upon every push or pull request to the `main` or `master` branches, the following checks are automatically executed:
+
+- **Backend Integration**: Configures JDK 21 and runs the full Maven test suite (`mvn clean test`), including H2-based integration tests.
+- **Frontend Integration**: Sets up Node.js, installs dependencies using `npm ci`, and runs vitest tests (`npm run test`).
+
+The workflow configuration is defined in [.github/workflows/ci.yml](.github/workflows/ci.yml).
 
 ## 🤖 My AI Usage
 
