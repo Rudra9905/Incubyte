@@ -11,6 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -172,6 +176,27 @@ class VehicleServiceTest {
 
         assertThrows(VehicleNotFoundException.class, () -> vehicleService.purchaseVehicle(id));
         verify(vehicleRepository, never()).save(any(Vehicle.class));
+    }
+
+    @Test
+    @DisplayName("purchaseVehicle should throw AccessDeniedException when caller has ADMIN role")
+    void testPurchaseVehicle_AdminBlocked() {
+        // Simulate an ADMIN principal in the SecurityContext (as the JWT filter would set it)
+        var adminAuth = new UsernamePasswordAuthenticationToken(
+                "admin@example.com",
+                null,
+                List.of(new SimpleGrantedAuthority("ADMIN"))
+        );
+        SecurityContextHolder.getContext().setAuthentication(adminAuth);
+
+        try {
+            Long id = 1L;
+            assertThrows(AccessDeniedException.class, () -> vehicleService.purchaseVehicle(id));
+            verify(vehicleRepository, never()).findById(anyLong());
+            verify(vehicleRepository, never()).save(any(Vehicle.class));
+        } finally {
+            SecurityContextHolder.clearContext();
+        }
     }
 
     @Test

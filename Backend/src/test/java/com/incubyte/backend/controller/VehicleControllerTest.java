@@ -180,8 +180,8 @@ class VehicleControllerTest {
 
     @Test
     @WithMockUser(username = "user@example.com", authorities = "USER")
-    @DisplayName("POST /api/vehicles/{id}/purchase - Success for authenticated User")
-    void testPurchaseVehicle_Success() throws Exception {
+    @DisplayName("POST /api/vehicles/{id}/purchase - Success for authenticated USER role")
+    void testPurchaseVehicle_UserSuccess() throws Exception {
         VehicleResponse response = new VehicleResponse(1L, "Honda", "Civic", "Sedan", BigDecimal.valueOf(25000), 4);
         when(vehicleService.purchaseVehicle(1L)).thenReturn(response);
 
@@ -191,6 +191,29 @@ class VehicleControllerTest {
                 .andExpect(jsonPath("$.quantity").value(4));
 
         verify(vehicleService).purchaseVehicle(1L);
+    }
+
+    @Test
+    @WithMockUser(username = "admin@example.com", authorities = "ADMIN")
+    @DisplayName("POST /api/vehicles/{id}/purchase - Forbidden for ADMIN role")
+    void testPurchaseVehicle_AdminForbidden() throws Exception {
+        // ADMIN users must NOT be allowed to purchase vehicles.
+        // This test drives the TDD implementation of the restriction.
+        mockMvc.perform(post("/api/vehicles/1/purchase")
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+
+        verify(vehicleService, never()).purchaseVehicle(anyLong());
+    }
+
+    @Test
+    @DisplayName("POST /api/vehicles/{id}/purchase - Unauthorized when not authenticated")
+    void testPurchaseVehicle_Unauthorized() throws Exception {
+        mockMvc.perform(post("/api/vehicles/1/purchase")
+                        .with(csrf()))
+                .andExpect(status().isUnauthorized());
+
+        verify(vehicleService, never()).purchaseVehicle(anyLong());
     }
 
     @Test

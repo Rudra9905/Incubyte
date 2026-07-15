@@ -49,8 +49,8 @@ public class SecurityConfig {
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/vehicles").authenticated()
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/vehicles/search").authenticated()
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/vehicles/**").authenticated()
-                // Vehicle purchase — any authenticated user
-                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/vehicles/*/purchase").authenticated()
+                // Vehicle purchase — USER role only (ADMIN is explicitly excluded)
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/vehicles/*/purchase").hasAuthority("USER")
                 // Admin-only operations
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/vehicles/*/restock").hasAuthority("ADMIN")
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/vehicles").hasAuthority("ADMIN")

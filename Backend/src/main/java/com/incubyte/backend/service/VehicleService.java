@@ -5,6 +5,9 @@ import com.incubyte.backend.dto.VehicleResponse;
 import com.incubyte.backend.entity.Vehicle;
 import com.incubyte.backend.exception.VehicleNotFoundException;
 import com.incubyte.backend.repository.VehicleRepository;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,6 +96,13 @@ public class VehicleService {
     }
 
     public VehicleResponse purchaseVehicle(Long id) {
+        // Defence-in-depth: reject ADMIN callers even if the filter chain is bypassed
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> "ADMIN".equals(a.getAuthority()))) {
+            throw new AccessDeniedException("Admins are not allowed to purchase vehicles");
+        }
+
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found with id: " + id));
         if (vehicle.getQuantity() <= 0) {
